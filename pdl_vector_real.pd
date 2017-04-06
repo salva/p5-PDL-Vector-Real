@@ -1,0 +1,170 @@
+# -*- Mode: CPerl -*-
+
+$::PP_VERBOSE=1;
+
+pp_boundscheck(0);
+
+pp_def('vr_norm2',
+       Pars => 'a(n); [o]c()',
+       Code => <<'EOC' );
+$GENERIC() n2 = 0;
+loop(n) %{
+    $GENERIC() x = $a();
+    n2 += x * x;
+%}
+$c() = n2;
+EOC
+
+pp_def('vr_norm',
+       Pars => 'a(n); [o]c()',
+       Code => <<'EOC' );
+$GENERIC() n2 = 0;
+loop(n) %{
+    $GENERIC() x = $a();
+    n2 += x * x;
+%}
+$c() = sqrt(n2);
+EOC
+
+pp_def('vr_manhattan_norm',
+       Pars => 'a(n); [o]c()',
+       Code => <<'EOC' );
+$GENERIC() n = 0;
+loop(n) %{
+    n += fabs($a());
+%}
+$c() = n;
+EOC
+
+pp_def('vr_chebyshev_norm',
+       Pars => 'a(n); [o]c()',
+       Code => <<'EOC' );
+$GENERIC() n = 0;
+loop(n) %{
+    $GENERIC() x = fabs($a());
+    n = (x > n ? x : n);
+%}
+$c() = n;
+EOC
+
+pp_def('vr_versor',
+       Pars => 'a(n); [o]c(n);',
+       Code => <<'EOC');
+$GENERIC() n2 = 0, inv_n;
+loop(n) %{
+    $GENERIC() x = $a();
+    n2 += x * x;
+%}
+if (n2 == 0) { croak("Illegal division by zero"); }
+inv_n = 1/sqrt(n2);
+loop(n) %{
+    $c() = inv_n * $a();
+%}
+EOC
+
+pp_def('vr_dot',
+       Pars => 'a(n); b(n); [o]c()',
+       Code => <<'EOC' );
+$GENERIC() acu = 0;
+loop(n) %{
+    acu += $a() * $b();
+%}
+$c() = acu;
+EOC
+
+pp_def('vr_dist2',
+       Pars => 'a(n); b(n); [o]c()',
+       Code => <<'EOC');
+$GENERIC() d2 = 0;
+loop(n) %{
+    $GENERIC() x = $a();
+    d2 += x * x;
+%}
+$c() = d2;
+EOC
+
+pp_def('vr_dist',
+       Pars => 'a(n); b(n); [o]c()',
+       Code => <<'EOC');
+$GENERIC() d2 = 0;
+loop(n) %{
+    $GENERIC() x = $a();
+    d2 += x * x;
+%}
+$c() = sqrt(d2);
+EOC
+
+pp_def('vr_dist_manhattan',
+       Pars => 'a(n); b(n); [o]c()',
+       Code => <<'EOC');
+$GENERIC() d = 0;
+loop(n) %{
+    d += fabs($a() - $b());
+%}
+$c() = d;
+EOC
+
+pp_def('vr_dist_chebyshev_norm',
+       Pars => 'a(n); b(n); [o]c(n)',
+       Code => <<'EOC');
+$GENERIC() d = 0;
+loop (n) %{
+    $GENERIC() dx = fabs($a() - $b());
+    d = (d > dx ? d : dx);
+%}
+$c() = d;
+
+pp_def('vr_decompose',
+       Pars => 'a(n); b(n); [o]c(n); [o]d(n)',
+       Code => <<'EOC');
+$GENERIC() dot = 0, an2 = 0, f = 0;
+loop (n) %{
+    $GENERIC() x = $a();
+    dot += x * $b();
+    an2 += x * x;
+%}
+if (an2 == 0) { croak("Illegal division by zero"); }
+f = dot / sqrt(an2);
+loop (n) %{
+    $GENERIC() x = $a() * f;
+    $c() = x;
+    $d() = $b() - x;
+%}
+EOC
+
+pp_def('vr_min_component_index',
+       Pars => 'a(n); [o]c()',
+       Code => <<'EOC');
+$GENERIC() minx = $a(n=>0);
+int i, mini = 0, n_size = $SIZE(n);
+for (i = 1; i < n_size; i++) {
+    $GENERIC() x = fabs($a(n=>i));
+    minx = (x < minx ? x : minx);
+    mini = (x < minx ? i : mini);
+}
+$c() = mini;
+EOC
+
+pp_def('vr_max_component_index',
+       Pars => 'a(n); [o]c()',
+       Code => <<'EOC');
+$GENERIC() maxx = 0;
+int maxi = 0;
+loop (n) %{
+    $GENERIC() x = fabs($a());
+    maxx = (x > maxx ? x : maxx);
+    maxi = (x > maxx ? n : maxi);
+%}
+$c() = maxi;
+EOC
+
+pp_def('vr_first_orthant_reflection',
+       Pars => 'a(n); [o]c()',
+       Code => <<'EOC');
+loop (n) %{
+    $c() = fabs($a());
+%}
+EOC
+
+pp_done();
+

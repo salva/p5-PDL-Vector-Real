@@ -1,0 +1,6 @@
+Revision history for Perl extension PDL::Vector::Real.
+
+0.01  Mon Apr  3 11:07:56 2017
+	- original version; created by h2xs 1.23 with options
+		-AXn PDL::Vector::Real
+
